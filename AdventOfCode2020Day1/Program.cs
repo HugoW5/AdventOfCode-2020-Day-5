@@ -1,15 +1,24 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Pipes;
+using System.Runtime.Intrinsics.Arm;
 
 namespace AdventOfCode2020Day1
 {
     internal class Program
     {
+        public struct Seat
+        {
+            public int row;
+            public int col;
+        }
+
         static void Main(string[] args)
         {
+
             List<string> seats = new List<string>();
-            List<int> seatIds = new List<int>();
+            Dictionary<int, Seat> keyValuePairs = new Dictionary<int, Seat>();
+
 
             using (var stream = new StreamReader("data.txt"))
             {
@@ -18,7 +27,6 @@ namespace AdventOfCode2020Day1
                     seats.Add(stream.ReadLine());
                 }
             }
-
 
             foreach (string seat in seats)
             {
@@ -57,20 +65,25 @@ namespace AdventOfCode2020Day1
                 }
                 int column = right;
                 int seatId = (row * 8) + column;
-                seatIds.Add(seatId);
-                Console.WriteLine("Row: {0} Column: {1} Seat-Id: {2}", row, column, seatId);
+
+                Seat seat1 = new Seat();
+                seat1.row = row;
+                seat1.col = column;
+                keyValuePairs.Add(seatId, seat1);
             }
 
-            int highest = 0;
-            foreach (int i in seatIds)
+
+            //sort dictionary with seats based on ascending rows
+            var tmpSortedSeats = from entry in keyValuePairs orderby entry.Value.row ascending select entry;
+            var sortedSeats = tmpSortedSeats.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+
+
+
+            foreach (int key in sortedSeats.Keys)
             {
-                if (i > highest)
-                    highest = i;
+                Console.WriteLine($"Id:{key} \t row:{sortedSeats[key].row}  \t col:{sortedSeats[key].col}");
             }
-            Console.WriteLine("Answer: " + highest);
-
-
-
 
         }
     }
