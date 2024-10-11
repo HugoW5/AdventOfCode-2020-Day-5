@@ -5,86 +5,62 @@ using System.Runtime.Intrinsics.Arm;
 
 namespace AdventOfCode2020Day1
 {
-    internal class Program
-    {
-        public struct Seat
-        {
-            public int row;
-            public int col;
-        }
+	internal class Program
+	{
 
-        static void Main(string[] args)
-        {
-
-            List<string> seats = new List<string>();
-            Dictionary<int, Seat> keyValuePairs = new Dictionary<int, Seat>();
+		static void Main(string[] args)
+		{
+			string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
 
-            using (var stream = new StreamReader("data.txt"))
-            {
-                while (!stream.EndOfStream)
-                {
-                    seats.Add(stream.ReadLine());
-                }
-            }
+			List<string> input = new List<string>();
 
-            foreach (string seat in seats)
-            {
-                int top = 127;
-                int bottom = 0;
-
-                for (int i = 0; i < seat.Length - 3; i++)
-                {
-                    switch (seat[i])
-                    {
-                        case 'F':
-                            top = (int)Math.Floor((decimal)((top + bottom) / 2));
-                            break;
-                        case 'B':
-                            bottom = (int)Math.Ceiling((decimal)((top + bottom) / 2));
-                            break;
-                    }
-                }
-                int row = top;
-
-                int right = 7;
-                int left = 0;
-                string leftRight = seat.Substring(7);
-
-                for (int i = 0; i < leftRight.Length; i++)
-                {
-                    switch (leftRight[i])
-                    {
-                        case 'R':
-                            left = (int)Math.Ceiling((decimal)(left + right) / 2);
-                            break;
-                        case 'L':
-                            right = (int)Math.Floor((decimal)(left + right) / 2);
-                            break;
-                    }
-                }
-                int column = right;
-                int seatId = (row * 8) + column;
-
-                Seat seat1 = new Seat();
-                seat1.row = row;
-                seat1.col = column;
-                keyValuePairs.Add(seatId, seat1);
-            }
+			using (var stream = new StreamReader("data.txt"))
+			{
+				while (!stream.EndOfStream)
+				{
+					input.Add(stream.ReadLine());
+				}
+			}
 
 
-            //sort dictionary with seats based on ascending rows
-            var tmpSortedSeats = from entry in keyValuePairs orderby entry.Value.row ascending select entry;
-            var sortedSeats = tmpSortedSeats.ToDictionary(pair => pair.Key, pair => pair.Value);
+			int count = 0;
+			for (int i = 0; i < input.Count; i++)
+			{
+				string nums = "";
+				for (int j = 0; j < input[i].Length; j++)
+				{
+					if (char.IsNumber(input[i][j]))
+					{
+						nums += input[i][j];
+						Console.WriteLine(input[i][j]);
+					}
+					else
+					{
+						for (int k = 0; k < numbers.Length; k++)
+						{
+							string s = "";
+							for (int u = j; u < input[i].Length; u++)
+							{
+								s += input[i][u];
+								if (s == numbers[k])
+								{
+									Console.WriteLine("{0} ({1})", k, s);
+									nums += k;
+									break;
+								}
+							}
+						}
+					}
+				}
+				string tmpCount = nums[0].ToString() + nums[nums.Length - 1];
+				count += int.Parse(tmpCount);
 
+				//Console.WriteLine("{0} \t {1}", i, count);
+			}
 
+			Console.WriteLine(count);
 
-
-            foreach (int key in sortedSeats.Keys)
-            {
-                Console.WriteLine($"Id:{key} \t row:{sortedSeats[key].row}  \t col:{sortedSeats[key].col}");
-            }
-
-        }
-    }
+		}
+	}
 }
