@@ -7,11 +7,8 @@ namespace AdventOfCode2020Day1
 {
 	internal class Program
 	{
-
 		static void Main(string[] args)
 		{
-			string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-
 
 			List<string> input = new List<string>();
 
@@ -23,44 +20,112 @@ namespace AdventOfCode2020Day1
 				}
 			}
 
+			List<int> powersums = new List<int>();
+			int sum = 0;
+			long powerSum = 1;
 
-			int count = 0;
 			for (int i = 0; i < input.Count; i++)
 			{
-				string nums = "";
-				for (int j = 0; j < input[i].Length; j++)
+
+				bool invalid = false;
+
+				int minRed = 0;
+				int minGreen = 0;
+				int minBlue = 0;
+
+				int gameId = int.Parse(input[i].Substring(5).Split(":")[0]);
+				var game = input[i].Split(":")[1].Split(";");
+
+				for (int j = 0; j < game.Length; j++)
 				{
-					if (char.IsNumber(input[i][j]))
+					int red = 0;
+					int green = 0;
+					int blue = 0;
+
+					string s = game[j].Trim();
+					if (s.Contains(','))
 					{
-						nums += input[i][j];
-						Console.WriteLine(input[i][j]);
-					}
-					else
-					{
-						for (int k = 0; k < numbers.Length; k++)
+						string[] gameParts = s.Split(",");
+						for (int k = 0; k < gameParts.Length; k++)
 						{
-							string s = "";
-							for (int u = j; u < input[i].Length; u++)
+							int count = int.Parse(gameParts[k].Trim().Split(' ')[0]);
+							switch (gameParts[k].Trim().Split(' ')[1])
 							{
-								s += input[i][u];
-								if (s == numbers[k])
-								{
-									Console.WriteLine("{0} ({1})", k, s);
-									nums += k;
+								case "red":
+									red += count;
 									break;
-								}
+								case "green":
+									green += count;
+									break;
+								case "blue":
+									blue += count;
+									break;
 							}
 						}
 					}
-				}
-				string tmpCount = nums[0].ToString() + nums[nums.Length - 1];
-				count += int.Parse(tmpCount);
+					else
+					{
+						int count = int.Parse(s.Trim().Split(' ')[0]);
+						switch (s.Trim().Split(' ')[0])
+						{
+							case "red":
+								red += count;
+								break;
+							case "green":
+								green += count;
+								break;
+							case "blue":
+								blue += count;
+								break;
+						}
+					}
+					if (red > minRed)
+						minRed = red;
+					if (green > minGreen)
+						minGreen = green;
+					if (blue > minBlue)
+						minBlue = blue;
 
-				//Console.WriteLine("{0} \t {1}", i, count);
+					Console.Write($"{gameId}: [Red: {red} Green: {green} Blue: {blue}]");
+
+
+					if (red > 12 || green > 13 || blue > 14)
+					{
+						Console.Write(" - Invalid");
+						invalid = true;
+					}
+					Console.Write("\n");
+				}
+
+				if (!invalid)
+				{
+					sum += gameId;
+				}
+
+				Console.WriteLine(sum);
+
+				if (minRed == 0)
+					minRed = 1;
+				if (minGreen == 0)
+					minGreen = 1;
+				if (minBlue == 0)
+					minBlue = 1;
+
+				Console.WriteLine("total:" + ((minRed * minGreen * minBlue)));
+				powersums.Add(minRed * minGreen * minBlue);
 			}
 
-			Console.WriteLine(count);
+			for (int i = 0; i < powersums.Count; i++)
+			{
+				if (powersums[i] > 0)
+				{
+					powerSum += powersums[i];
+				}
+			}
 
+
+
+			Console.WriteLine(powerSum);
 		}
 	}
 }
